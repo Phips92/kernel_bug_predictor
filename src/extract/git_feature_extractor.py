@@ -1,5 +1,6 @@
 import git
 from typing import Iterator
+import time
 
 
 class GitFeatureExtractor:
@@ -28,3 +29,30 @@ class GitFeatureExtractor:
             Iterator over git.Commit objects.
         """
         return self.repo.iter_commits(revision_range)
+
+    def extract_commit_metadata(self, commit: git.Commit) -> dict:
+        """
+        Extracts basic metadata from a single commit.
+
+        Args:
+            commit (git.Commit): A GitPython commit object.
+
+        Returns:
+            dict: Dictionary with commit metadata.
+        """
+        author_name = commit.author.name
+        author_date = int(time.mktime(time.gmtime(commit.authored_date)))
+        committer_name = commit.committer.name
+        commit_date = int(time.mktime(time.gmtime(commit.committed_date)))
+        commit_delay = commit_date - author_date
+        message_length = len(commit.message.strip())
+
+        return {
+            "commit_hash": commit.hexsha[:12],
+            "author": author_name,
+            "author_date": author_date,
+            "committer": committer_name,
+            "commit_date": commit_date,
+            "commit_delay": commit_delay,
+            "message_length": message_length
+        }
