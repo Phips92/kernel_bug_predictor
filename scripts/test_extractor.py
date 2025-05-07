@@ -34,3 +34,12 @@ Link: https://kernel.org/r/patch-v1
 msg_counts = extractor.analyze_commit_message(test_message)
 for key, val in msg_counts.items():
     print(f"{key}: {val}")
+
+
+print("\n=== Test: extract_commit_features (first real commit) ===")
+if commits:
+    full_features = extractor.extract_commit_features(commits[0])
+    for key, value in full_features.items():
+        print(f"{key}: {value}")
+else:
+    print("No commits found to test.")
