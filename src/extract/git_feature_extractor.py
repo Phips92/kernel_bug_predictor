@@ -1,6 +1,7 @@
 import git
 from typing import Iterator
 import time
+import re
 
 
 class GitFeatureExtractor:
@@ -56,3 +57,40 @@ class GitFeatureExtractor:
             "commit_delay": commit_delay,
             "message_length": message_length
         }
+
+    def analyze_commit_message(self, message: str) -> dict:
+        """
+        Analyze commit message to count signature tags like 'Signed-off-by', 'Reviewed-by', etc.
+
+        Args:
+            message (str): The full commit message text.
+
+        Returns:
+            dict: Count of each signature type found in the message.
+        """
+        patterns = {
+            "signed_off": re.compile(r"^Signed-off-by.*", re.IGNORECASE),
+            "reviewed_by": re.compile(r"^Reviewed-by.*", re.IGNORECASE),
+            "tested_by": re.compile(r"^Tested-by.*", re.IGNORECASE),
+            "reported_by": re.compile(r"^Reported-by.*", re.IGNORECASE),
+            "acked_by": re.compile(r"^Acked-by.*", re.IGNORECASE),
+            "cc": re.compile(r"^CC:.*", re.IGNORECASE),
+            "link": re.compile(r"^Link:.*", re.IGNORECASE),
+        }
+
+        counts = {key: 0 for key in patterns}
+
+        for line in message.splitlines():
+            for key, regex in patterns.items():
+                if regex.match(line.strip()):
+                    counts[key] += 1
+
+        counts["by_sum"] = sum(counts.values())
+        return counts
+
+
+
+
+
+
+
