@@ -88,6 +88,31 @@ class GitFeatureExtractor:
         counts["by_sum"] = sum(counts.values())
         return counts
 
+    def extract_commit_features(self, commit: git.Commit) -> dict:
+        """
+        Extracts a complete feature set from a single commit, including metadata and message analysis.
+
+        Args:
+            commit (git.Commit): A GitPython commit object.
+
+        Returns:
+            dict: Dictionary of combined commit features.
+        """
+        # Basic metadata
+        features = self.extract_commit_metadata(commit)
+
+        # Message signature features
+        message_signatures = self.analyze_commit_message(commit.message)
+
+        # Merge dictionaries
+        features.update(message_signatures)
+
+        return features
+
+
+
+
+
 
 
 
