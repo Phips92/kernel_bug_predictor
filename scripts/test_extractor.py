@@ -1,5 +1,8 @@
-from extract.git_feature_extractor import GitFeatureExtractor
 import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src")))
+from extract.git_feature_extractor import GitFeatureExtractor
+
 
 if len(sys.argv) != 2:
     print("Usage: python test_extractor.py <path_to_git_repo>")
