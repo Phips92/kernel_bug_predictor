@@ -20,3 +20,17 @@ if commits:
     for key, value in metadata.items():
         print(f"  {key}: {value}")
 
+
+print("\n=== Test: analyze_commit_message ===")
+test_message = """
+This patch improves something.
+
+Signed-off-by: Phips Developer <phips@dev.com>
+Reviewed-by: Senior Dev <senior@dev.com>
+Reviewed-by: Bob <bob@kernel.org>
+Link: https://kernel.org/r/patch-v1
+"""
+
+msg_counts = extractor.analyze_commit_message(test_message)
+for key, val in msg_counts.items():
+    print(f"{key}: {val}")
