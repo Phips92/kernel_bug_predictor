@@ -39,7 +39,7 @@ class GitFeatureExtractor:
 
         return True
 
-    def get_commits(self, revision_range: str = "v4.0...v5.19") -> Iterator[git.Commit]:
+    def get_commits(self, revision_range: str = "v5.18...v5.19") -> Iterator[git.Commit]:
         """
         Retrieve all commits (no merges) in a given revision range.
 
