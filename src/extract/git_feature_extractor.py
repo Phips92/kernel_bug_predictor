@@ -19,9 +19,29 @@ class GitFeatureExtractor:
         self.repo_path = repo_path
         self.repo = git.Repo(repo_path)
 
+    def is_informative_commit(self, commit: git.Commit) -> bool:
+        """
+        Determines whether a commit is useful for ML feature extraction.
+        Excludes merge commits and commits without line changes.
+    
+        Args:
+            commit (git.Commit): Git commit to check.
+    
+        Returns:
+            bool: True if commit is suitable for feature extraction.
+        """
+        if len(commit.parents) != 1:
+            return False
+    
+        stats = commit.stats.total
+        if stats.get("lines", 0) == 0:
+            return False
+
+        return True
+
     def get_commits(self, revision_range: str = "v4.0...v5.19") -> Iterator[git.Commit]:
         """
-        Retrieve all commits in a given revision range.
+        Retrieve all commits (no merges) in a given revision range.
 
         Args:
             revision_range (str): Git revision range (e.g. "v4.0...v5.19").
@@ -29,7 +49,7 @@ class GitFeatureExtractor:
         Returns:
             Iterator over git.Commit objects.
         """
-        return self.repo.iter_commits(revision_range)
+        return (commit for commit in self.repo.iter_commits(revision_range) if self.is_informative_commit(commit))
 
     def extract_commit_metadata(self, commit: git.Commit) -> dict:
         """
