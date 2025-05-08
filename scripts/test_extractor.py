@@ -35,6 +35,8 @@ msg_counts = extractor.analyze_commit_message(test_message)
 for key, val in msg_counts.items():
     print(f"{key}: {val}")
 
+print("\n=== Raw commit message ===")
+print(repr(commits[0].message))
 
 print("\n=== Test: extract_commit_features (first real commit) ===")
 if commits:
