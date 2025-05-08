@@ -5,6 +5,30 @@ import re
 import io
 from unidiff import PatchSet
 
+
+# Used to assign complexity scores to top-level directories
+DIR_COMPLEXITY = {
+    "kernel": 9, "mm": 9, "arch": 9, "include": 6.25, "net": 6.25, "fs": 6.25,
+    "firmware": 4, "block": 4, "crypto": 4, "security": 4, "virt": 4,
+    "certs": 2.25, "init": 2.25, "lib": 2.25, "sound": 2.25, "ipc": 2.25,
+    "drivers": 2.25, "Documentation": 2.25, "samples": 2.25,
+    "tools": 1, "scripts": 1, "usr": 1, "Kbuild": 1, "Kconfig": 1,
+    "COPYING": 0, "CREDITS": 0, "Makefile": 1, "MAINTAINERS": 0,
+    ".mailmap": 0, "README": 0, ".gitignore": 0, ".gitattributes": 0,
+    ".get_maintainer.ignore": 0, "REPORTING-BUGS": 0, ".cocciconfig": 0,
+    "README.md": 0, "null": 0
+}
+
+# Scoring for file-level change type
+FILE_IMPACT = {
+    "new": 5,
+    "modified": 2,
+    "deleted": 0,
+    "huh": 0  # fallback
+}
+
+
+
 class GitFeatureExtractor:
     """
     This class provides methods to extract metadata and features from Git commits.
@@ -145,6 +169,54 @@ class GitFeatureExtractor:
         features.update(message_signatures)
 
         return features
+
+    def extract_diff_features(self, commit: git.Commit) -> dict:
+
+        """
+        Extracts patch-based features from a commit: number of changed files,
+        overall impact score, and directory complexity.
+
+        Args:
+            commit (git.Commit): A GitPython commit object.
+
+        Returns:
+            dict: Dictionary with patch-related features.
+        """
+        diff_text = self.repo.git.diff(commit.parents[0].hexsha, commit.hexsha)
+        patch = PatchSet(io.StringIO(diff_text))
+
+        file_impact_total = 0
+        dir_complexity_total = 0
+        file_count = 0
+
+        for file in patch:
+            file_count += 1
+
+            # Determine file change type
+            if file.is_added_file:
+                change_type = "new"
+            elif file.is_removed_file:
+                change_type = "deleted"
+            elif file.is_modified_file:
+                change_type = "modified"
+            else:
+                change_type = "huh"
+
+            file_impact_total += FILE_IMPACT.get(change_type, 0)
+
+            # Determine top-level directory
+            filepath = file.path
+            top_dir = filepath.split("/")[0] if "/" in filepath else filepath
+            dir_complexity_total += DIR_COMPLEXITY.get(top_dir, 0)
+
+        return {
+            "files_changed": file_count,
+            "file_impact": file_impact_total,
+            "dir_complexity": dir_complexity_total
+        }
+
+
+
 
 
 
