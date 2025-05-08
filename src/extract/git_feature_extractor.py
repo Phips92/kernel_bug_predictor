@@ -2,7 +2,8 @@ import git
 from typing import Iterator
 import time
 import re
-
+import io
+from unidiff import PatchSet
 
 class GitFeatureExtractor:
     """
@@ -37,6 +38,22 @@ class GitFeatureExtractor:
         if stats.get("lines", 0) == 0:
             return False
 
+        try:
+            diff_text = self.repo.git.diff(commit.parents[0].hexsha, commit.hexsha)
+            patch = PatchSet(io.StringIO(diff_text))
+
+            added = sum(hunk.added for f in patch for hunk in f)
+            removed = sum(hunk.removed for f in patch for hunk in f)
+            if (added + removed) < 5:
+                return False
+
+        except Exception as e:
+            print(f"Patch parse error for {commit.hexsha[:12]}: {e}")
+            return False
+
+
+
+
         return True
 
     def get_commits(self, revision_range: str = "v5.18...v5.19") -> Iterator[git.Commit]:
@@ -49,7 +66,7 @@ class GitFeatureExtractor:
         Returns:
             Iterator over git.Commit objects.
         """
-        return (commit for commit in self.repo.iter_commits(revision_range) if self.is_informative_commit(commit))
+        return (commit for commit in self.repo.iter_commits(revision_range, no_merges=True) if self.is_informative_commit(commit))
 
     def extract_commit_metadata(self, commit: git.Commit) -> dict:
         """
