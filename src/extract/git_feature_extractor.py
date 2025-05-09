@@ -216,6 +216,22 @@ class GitFeatureExtractor:
         }
 
 
+    def get_full_feature_vector(self, commit: git.Commit) -> dict:
+        """
+        Combines metadata, message-based and diff-based features into a full commit feature vector.
+
+        Args:
+            commit (git.Commit): A GitPython commit object.
+
+        Returns:
+            dict: Combined feature dictionary.
+        """
+        features = {}
+        features.update(self.extract_commit_metadata(commit))
+        features.update(self.analyze_commit_message(commit.message))
+        features.update(self.extract_diff_features(commit))
+        return features
+
 
 
 
