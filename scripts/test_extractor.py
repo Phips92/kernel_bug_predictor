@@ -2,7 +2,7 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src")))
 from extract.git_feature_extractor import GitFeatureExtractor
-
+from pprint import pprint
 
 if len(sys.argv) != 2:
     print("Usage: python test_extractor.py <path_to_git_repo>")
@@ -45,3 +45,12 @@ if commits:
         print(f"{key}: {value}")
 else:
     print("No commits found to test.")
+
+print("\n=== Test: get_full_feature_vector (first real commit) ===")
+if commits:
+    full_vector = extractor.get_full_feature_vector(commits[0])
+    pprint(full_vector)
+else:
+    print("No commits found to test.")
+
+
