@@ -233,6 +233,33 @@ class GitFeatureExtractor:
         return features
 
 
+    def label_commit(self, commit: git.Commit) -> int:
+        """
+        Heuristically label a commit as a bug-fix based on its message content.
+
+        Returns:
+            int: 1 if likely a bug-fix commit, else 0
+        """
+        message = commit.message.lower()
+
+        # Common bug-fix indicators
+        patterns = [
+            r"\bfix(e[ds])?\b",           # fix, fixed, fixes
+            r"\bbug(s)?\b",               # bug, bugs
+            r"\bregression(s)?\b",        # regression, regressions
+            r"\bcorrect(ed|ion)?\b",      # correct, corrected, correction
+            r"\bresolve(d)?\b",           # resolve, resolved
+            r"cc:.*stable@",              # stable backport indication
+            r"\breported-by\b",
+            r"\bfixes:\b"
+        ]
+
+        for pattern in patterns:
+            if re.search(pattern, message):
+                return 1
+
+        return 0
+
 
 
 
