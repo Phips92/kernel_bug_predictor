@@ -25,3 +25,27 @@ X_scaled = scaler.fit_transform(X)
 # Split
 X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, stratify=y, random_state=42)
 
+# Define Keras model
+model = keras.Sequential([
+    layers.Dense(64, activation="relu", input_shape=(X_train.shape[1],)),
+    layers.Dropout(0.2),
+    layers.Dense(32, activation="relu"),
+    layers.Dropout(0.1),
+    layers.Dense(1, activation="sigmoid")  # Binary classification
+])
+
+model.compile(
+    optimizer="adam",
+    loss="binary_crossentropy",
+    metrics=["accuracy", keras.metrics.AUC(name="auc")]
+)
+
+# Train the model
+history = model.fit(
+    X_train, y_train,
+    validation_data=(X_test, y_test),
+    epochs=10,
+    batch_size=32,
+    verbose=1
+)
+
