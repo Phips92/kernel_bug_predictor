@@ -7,6 +7,7 @@ from tensorflow import keras
 from tensorflow.keras import layers
 import matplotlib.pyplot as plt
 from sklearn.metrics import roc_curve, roc_auc_score, classification_report, confusion_matrix
+import joblib
 
 if len(sys.argv) != 2:
     print("Usage: python train_model.py <features_csv>")
@@ -75,6 +76,17 @@ plt.legend()
 plt.grid(True)
 plt.tight_layout()
 plt.show()
+
+# Save model
+model.save("models/bugfix_model.keras")
+print("Model saved to models/bugfix_model.keras")
+
+# Save scaler
+joblib.dump(scaler, "models/scaler.pkl")
+print("Scaler saved to models/scaler.pkl")
+
+
+
 
 
 
