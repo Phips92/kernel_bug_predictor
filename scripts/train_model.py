@@ -6,7 +6,7 @@ from sklearn.preprocessing import StandardScaler
 from tensorflow import keras
 from tensorflow.keras import layers
 import matplotlib.pyplot as plt
-from sklearn.metrics import roc_curve
+from sklearn.metrics import roc_curve, roc_auc_score, classification_report, confusion_matrix
 
 if len(sys.argv) != 2:
     print("Usage: python train_model.py <features_csv>")
@@ -30,7 +30,7 @@ X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, 
 # Define Keras model
 model = keras.Sequential([
     keras.Input(shape=(X_train.shape[1],)),
-    layers.Dense(64, activation="relu", 
+    layers.Dense(64, activation="relu"), 
     layers.Dropout(0.2),
     layers.Dense(32, activation="relu"),
     layers.Dropout(0.1),
@@ -52,6 +52,17 @@ history = model.fit(
     verbose=1
 )
 
+# Predict probabilities
+y_pred_proba = model.predict(X_test).flatten()
+y_pred = (y_pred_proba >= 0.5).astype(int)
+
+# Eval-Metriken
+print("\n=== Evaluation ===")
+print("Confusion Matrix:")
+print(confusion_matrix(y_test, y_pred))
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred, digits=3))
+print("ROC AUC:", roc_auc_score(y_test, y_pred_proba))
 
 
 fpr, tpr, _ = roc_curve(y_test, y_pred_proba)
