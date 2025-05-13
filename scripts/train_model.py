@@ -5,6 +5,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from tensorflow import keras
 from tensorflow.keras import layers
+import matplotlib.pyplot as plt
+from sklearn.metrics import roc_curve
 
 if len(sys.argv) != 2:
     print("Usage: python train_model.py <features_csv>")
@@ -27,7 +29,8 @@ X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, 
 
 # Define Keras model
 model = keras.Sequential([
-    layers.Dense(64, activation="relu", input_shape=(X_train.shape[1],)),
+    keras.Input(shape=(X_train.shape[1],)),
+    layers.Dense(64, activation="relu", 
     layers.Dropout(0.2),
     layers.Dense(32, activation="relu"),
     layers.Dropout(0.1),
@@ -48,4 +51,19 @@ history = model.fit(
     batch_size=32,
     verbose=1
 )
+
+
+
+fpr, tpr, _ = roc_curve(y_test, y_pred_proba)
+plt.plot(fpr, tpr, label="ROC Curve (AUC = {:.3f})".format(roc_auc_score(y_test, y_pred_proba)))
+plt.plot([0, 1], [0, 1], linestyle="--", color="gray")
+plt.xlabel("False Positive Rate")
+plt.ylabel("True Positive Rate")
+plt.title("Receiver Operating Characteristic")
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+
 
