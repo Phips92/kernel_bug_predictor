@@ -80,7 +80,7 @@ class GitFeatureExtractor:
 
         return True
 
-    def get_commits(self, revision_range: str = "v5.18...v5.19") -> Iterator[git.Commit]:
+    def get_commits(self, revision_range: str = "v5.18...v6.1") -> Iterator[git.Commit]:
         """
         Retrieve all commits (no merges) in a given revision range.
 
@@ -216,12 +216,14 @@ class GitFeatureExtractor:
         }
 
 
-    def get_full_feature_vector(self, commit: git.Commit) -> dict:
+    def get_full_feature_vector(self, commit: git.Commit, include_message: bool = False) -> dict:
         """
-        Combines metadata, message-based and diff-based features into a full commit feature vector.
+        Combines metadata, message-based and diff-based features into a full commit feature vector, 
+        including a binary bug-fix label. Optionally includes the raw commit message.
 
         Args:
             commit (git.Commit): A GitPython commit object.
+            include_message (bool): Whether to include the raw commit message.
 
         Returns:
             dict: Combined feature dictionary.
@@ -230,6 +232,11 @@ class GitFeatureExtractor:
         features.update(self.extract_commit_metadata(commit))
         features.update(self.analyze_commit_message(commit.message))
         features.update(self.extract_diff_features(commit))
+        features["label"] = self.label_commit(commit)
+
+        if include_message:
+            features["message"] = commit.message.strip()
+
         return features
 
 
