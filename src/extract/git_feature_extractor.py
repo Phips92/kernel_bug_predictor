@@ -80,7 +80,7 @@ class GitFeatureExtractor:
 
         return True
 
-    def get_commits(self, revision_range: str = "v5.18...v6.1") -> Iterator[git.Commit]:
+    def get_commits(self, revision_range: str = "v4.0...v5.16") -> Iterator[git.Commit]:
         """
         Retrieve all commits (no merges) in a given revision range.
 
@@ -215,8 +215,24 @@ class GitFeatureExtractor:
             "dir_complexity": dir_complexity_total
         }
 
+    def find_fixed_commits(self, revision_range: str = "v4.0...v6.14") -> set[str]:
+        """
+        Scan all commits for 'Fixes:' tags and collect the commit hashes they reference.
 
-    def get_full_feature_vector(self, commit: git.Commit, include_message: bool = False) -> dict:
+        Returns:
+            Set of short hashes (first 12 characters) of buggy commits that were fixed.
+        """
+        fixed_hashes = set()
+
+        for commit in self.repo.iter_commits(revision_range, no_merges=True):
+            matches = re.findall(r"Fixes:\s*([0-9a-f]{7,40})", commit.message, re.IGNORECASE)
+            for m in matches:
+                short_hash = m.strip()[:12]
+                fixed_hashes.add(short_hash)
+    
+        return fixed_hashes
+
+    def get_full_feature_vector(self, commit: git.Commit, fixed_hashes: set = None, include_message: bool = False) -> dict:
         """
         Combines metadata, message-based and diff-based features into a full commit feature vector, 
         including a binary bug-fix label. Optionally includes the raw commit message.
@@ -232,7 +248,11 @@ class GitFeatureExtractor:
         features.update(self.extract_commit_metadata(commit))
         features.update(self.analyze_commit_message(commit.message))
         features.update(self.extract_diff_features(commit))
-        features["label"] = self.label_commit(commit)
+
+        if fixed_hashes is not None:
+            features["label"] = 1 if commit.hexsha[:12] in fixed_hashes else 0
+        else:
+            features["label"] = 0  # fallback if no labeling applied
 
         if include_message:
             features["message"] = commit.message.strip()
@@ -240,32 +260,10 @@ class GitFeatureExtractor:
         return features
 
 
-    def label_commit(self, commit: git.Commit) -> int:
-        """
-        Heuristically label a commit as a bug-fix based on its message content.
 
-        Returns:
-            int: 1 if likely a bug-fix commit, else 0
-        """
-        message = commit.message.lower()
 
-        # Common bug-fix indicators
-        patterns = [
-            r"\bfix(e[ds])?\b",           # fix, fixed, fixes
-            r"\bbug(s)?\b",               # bug, bugs
-            r"\bregression(s)?\b",        # regression, regressions
-            r"\bcorrect(ed|ion)?\b",      # correct, corrected, correction
-            r"\bresolve(d)?\b",           # resolve, resolved
-            r"cc:.*stable@",              # stable backport indication
-            r"\breported-by\b",
-            r"\bfixes:\b"
-        ]
 
-        for pattern in patterns:
-            if re.search(pattern, message):
-                return 1
 
-        return 0
 
 
 
