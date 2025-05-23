@@ -14,6 +14,8 @@ repo_path = sys.argv[1]
 output_file = sys.argv[2]
 
 extractor = GitFeatureExtractor(repo_path)
+fixed_hashes = extractor.find_fixed_commits()
+
 commits = list(extractor.get_commits())
 print(f"Extracting features from {len(commits)} commits...")
 
@@ -21,7 +23,7 @@ with open(output_file, mode="w", newline="") as csvfile:
     writer = None
 
     for commit in commits:
-        features = extractor.get_full_feature_vector(commit)
+        features = extractor.get_full_feature_vector(commit, fixed_hashes=fixed_hashes)
 
         # Write headers once
         if writer is None:
