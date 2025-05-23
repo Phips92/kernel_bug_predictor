@@ -8,6 +8,7 @@ from tensorflow.keras import layers
 import matplotlib.pyplot as plt
 from sklearn.metrics import roc_curve, roc_auc_score, classification_report, confusion_matrix
 import joblib
+from sklearn.utils import class_weight
 
 if len(sys.argv) != 2:
     print("Usage: python train_model.py <features_csv>")
@@ -27,6 +28,15 @@ X_scaled = scaler.fit_transform(X)
 
 # Split
 X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, stratify=y, random_state=42)
+
+# Compute class weights
+class_weights = class_weight.compute_class_weight(
+    class_weight="balanced",
+    classes=np.unique(y_train),
+    y=y_train
+)
+class_weight_dict = {i: w for i, w in enumerate(class_weights)}
+print("Computed class weights:", class_weight_dict)
 
 # Define Keras model
 model = keras.Sequential([
@@ -50,7 +60,8 @@ history = model.fit(
     validation_data=(X_test, y_test),
     epochs=10,
     batch_size=32,
-    verbose=1
+    verbose=1,
+    class_weight=class_weight_dict    
 )
 
 # Predict probabilities
