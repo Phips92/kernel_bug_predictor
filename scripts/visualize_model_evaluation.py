@@ -28,7 +28,7 @@ model = load_model("models/bugfix_model.keras")
 
 # Predict
 y_pred_proba = model.predict(X_scaled).flatten()
-y_pred = (y_pred_proba >= 0.9).astype(int)
+y_pred = (y_pred_proba >= 0.7).astype(int)
 
 # Evaluation
 print("\n=== Evaluation ===")
@@ -50,15 +50,20 @@ plt.legend()
 plt.grid(True)
 plt.tight_layout()
 plt.savefig("roc_curve.png")
-print("✅ Saved ROC curve to roc_curve.png")
+print("Saved ROC curve to roc_curve.png")
 
 # Plot model architecture
 plot_model(model, show_shapes=True, to_file="model_architecture.png")
-print("✅ Saved model architecture to model_architecture.png")
+print("Saved model architecture to model_architecture.png")
 
 
-
-
+plt.hist(y_pred_proba[y == 1], bins=30, alpha=0.7, label="True Bugfixes")
+plt.hist(y_pred_proba[y == 0], bins=30, alpha=0.7, label="Non-Bugfixes")
+plt.legend()
+plt.xlabel("Predicted Probability")
+plt.title("Prediction Distribution by Class")
+plt.savefig("prediction_histogram_by_class.png")
+print("Saved bug prediction histogram to prediction_histogram_by_class.png")
 
 
 

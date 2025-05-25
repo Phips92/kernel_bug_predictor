@@ -4,37 +4,30 @@ import re
 import sys
 
 if len(sys.argv) != 2:
-    print("Usage: python check_tool_mentions.py <predictions_and_message_csv>")
+    print("Usage: python check_tool_ortho.py <predictions_and_tools_csv>")
     sys.exit(1)
 
 pred_path = sys.argv[1]
 df = pd.read_csv(pred_path)
 
-if "message" not in df.columns:
-    print("ERROR: 'message' column required in CSV.")
+if "tool_found" not in df.columns:
+    print("ERROR: 'tool_found' column required in CSV.")
     sys.exit(1)
 
-# toolnames
-tools = [
-    "sparse", "smatch", "clang", "coverity", "checkpatch", "coccinelle",
-    "gcc", "cppcheck", "valgrind", "kasan", "kcsan", "ubsan", "lockdep", "syzbot", "syzkaller"
-]
-tool_pattern = re.compile(r"\b(" + "|".join(tools) + r")\b", flags=re.IGNORECASE)
-
 # parameter
-NUM_SAMPLES = 100
-THRESHOLD_HIGH = 0.9
-THRESHOLD_LOW = 0.5
+NUM_SAMPLES = 400
+THRESHOLD_HIGH = 0.5
+THRESHOLD_LOW = 0.25
 
 # high & low grouping
 high = df[df["bugfix_probability"] >= THRESHOLD_HIGH].sample(n=NUM_SAMPLES)
 low = df[df["bugfix_probability"] < THRESHOLD_LOW].sample(n=NUM_SAMPLES)
 
-def count_tool_mentions(df):
-    return sum(bool(tool_pattern.search(msg)) for msg in df["message"].fillna(""))
+def count_tool_flags(df):
+    return df["tool_found"].sum()
 
-high_tool_mentions = count_tool_mentions(high)
-low_tool_mentions = count_tool_mentions(low)
+high_tool_mentions = count_tool_flags(high)
+low_tool_mentions = count_tool_flags(low)
 
 print("=== Tool Mention Analysis ===")
 print(f"In HIGH group (model flagged as bugfix):")

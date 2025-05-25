@@ -17,10 +17,15 @@ print(df.head())
 print("\n=== Datenform ===")
 print(f"Rows: {df.shape[0]}, Columns: {df.shape[1]}")
 
-print("\n=== Verteilung des Labels ===")
-print(df['label'].value_counts())
+print("\n=== Label Distribution ===")
+print(df["label"].value_counts())
 
-print("\n=== Statistische Zusammenfassung ===")
+if "tool_found" in df.columns:
+    print("\n=== Tool Found Summary ===")
+    tool_count = df["tool_found"].sum()
+    print(f"{tool_count} commits were marked as fixed using known tools.")
+
+print("\n=== Statistic summary ===")
 print(df.describe())
 
 # Bugfix Dist over time
@@ -42,4 +47,9 @@ sns.boxplot(data=filtered, x="label", y="message_length")
 plt.title("Message Length (99% Bereich)")
 
 plt.show()
+
+
+# for manual check
+buggy = df[df["label"] == 1]
+print(buggy.head(10)[["commit_hash", "author", "message_length"]])
 
