@@ -62,6 +62,7 @@ class GitFeatureExtractor:
         if stats.get("lines", 0) == 0:
             return False
 
+        """
         try:
             diff_text = self.repo.git.diff(commit.parents[0].hexsha, commit.hexsha)
             patch = PatchSet(io.StringIO(diff_text))
@@ -74,13 +75,13 @@ class GitFeatureExtractor:
         except Exception as e:
             print(f"Patch parse error for {commit.hexsha[:12]}: {e}")
             return False
-
+        """
 
 
 
         return True
 
-    def get_commits(self, revision_range: str = "v4.0...v5.16") -> Iterator[git.Commit]:
+    def get_commits(self, revision_range: str = "v5.17...v6.0") -> Iterator[git.Commit]:
         """
         Retrieve all commits (no merges) in a given revision range.
 
@@ -215,7 +216,7 @@ class GitFeatureExtractor:
             "dir_complexity": dir_complexity_total
         }
 
-    def find_fixed_commits(self, revision_range: str = "v4.0...v6.14") -> set[str]:
+    def find_fixed_commits(self, revision_range: str = "v5.17...v6.14") -> set[str]:
         """
         Scan all commits for 'Fixes:' tags and collect the commit hashes they reference.
 
@@ -232,14 +233,15 @@ class GitFeatureExtractor:
     
         return fixed_hashes
 
-    def get_full_feature_vector(self, commit: git.Commit, fixed_hashes: set = None, include_message: bool = False) -> dict:
+    def get_full_feature_vector(self, commit: git.Commit, fixed_hashes: set = None, bug_tool_map: dict = None) -> dict:
         """
         Combines metadata, message-based and diff-based features into a full commit feature vector, 
         including a binary bug-fix label. Optionally includes the raw commit message.
 
         Args:
             commit (git.Commit): A GitPython commit object.
-            include_message (bool): Whether to include the raw commit message.
+            fixed_hashes (set): Set of commit hashes considered buggy.
+            bug_tool_map (dict): Optional map of commit_hash -> 1/0 indicating whether the bug was found by tool.
 
         Returns:
             dict: Combined feature dictionary.
@@ -254,15 +256,39 @@ class GitFeatureExtractor:
         else:
             features["label"] = 0  # fallback if no labeling applied
 
-        if include_message:
-            features["message"] = commit.message.strip()
+        if bug_tool_map is not None:
+            features["tool_found"] = bug_tool_map.get(commit.hexsha[:12], 0)
+        else:
+            features["tool_found"] = 0
 
         return features
 
 
+    def find_fixed_commits_with_tool_indication(self, revision_range: str = "v5.18...v6.14") -> dict:
+        """
+        Scan all commits for 'Fixes:' tags and collect referenced buggy commit hashes.
+        Also detect whether the fixing commit mentions a known tool in its message.
 
+        Returns:
+            Dict: {short_buggy_commit_hash: 1 if tool mentioned, else 0}
+        """
+        tools = [
+            "sparse", "smatch", "clang", "coverity", "checkpatch", "coccinelle",
+            "gcc", "cppcheck", "valgrind", "kasan", "kcsan", "ubsan",
+            "lockdep", "syzbot", "syzkaller"
+        ]
+        tool_pattern = re.compile(r"\b(" + "|".join(tools) + r")\b", re.IGNORECASE)
 
+        bug_dict = {}
+    
+        for commit in self.repo.iter_commits(revision_range, no_merges=True):
+            matches = re.findall(r"Fixes:\s*([0-9a-f]{7,40})", commit.message, re.IGNORECASE)
+            if matches:
+                tool_found = int(bool(tool_pattern.search(commit.message)))
+                for m in matches:
+                    bug_dict[m.strip()[:12]] = tool_found
 
+        return bug_dict
 
 
 
