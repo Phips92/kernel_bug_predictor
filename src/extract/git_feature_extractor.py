@@ -292,6 +292,35 @@ class GitFeatureExtractor:
 
 
 
+    def extract_bug_lifetimes(self, revision_range: str = "v4.0...v5.16") -> list[int]:
+        """
+        Extracts bug lifetimes in days based on 'Fixes:' tags in commit messages.
+
+        Args:
+            revision_range (str): Git revision range to analyze.
+    
+        Returns:
+            List of bug lifetimes (in days).
+        """
+        fixes_re = re.compile(r"Fixes:\s*([0-9a-fA-F]{7,40})")
+        lifetimes = []
+    
+        for commit in self.repo.iter_commits(revision_range, no_merges=True):
+            matches = fixes_re.findall(commit.message)
+            for fix_hash in matches:
+                try:
+                    fixed_commit = self.repo.commit(fix_hash)
+                    delta = commit.committed_datetime - fixed_commit.committed_datetime
+                    lifetime_days = delta.days
+                    if lifetime_days >= 0:
+                        lifetimes.append(lifetime_days)
+                except Exception as e:
+                    print(f"Warning: could not resolve commit {fix_hash} - {e}")
+                    continue
+    
+        return lifetimes
+
+
 
 
 
