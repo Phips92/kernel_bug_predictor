@@ -41,6 +41,7 @@ scripts/
 ├── test_extractor.py # Verifies feature extractor functionality
 scr/
 └── extract/git_feature_extractor.py # Core feature extraction class
+```
 
 ---
 
