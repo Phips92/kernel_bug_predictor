@@ -314,6 +314,7 @@ class GitFeatureExtractor:
                     lifetime_days = delta.days
                     if lifetime_days >= 0:
                         lifetimes.append(lifetime_days)
+                        print("passt")
                 except Exception as e:
                     print(f"Warning: could not resolve commit {fix_hash} - {e}")
                     continue

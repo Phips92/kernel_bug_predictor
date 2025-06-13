@@ -14,15 +14,17 @@ if len(sys.argv) != 2:
 repo_path = sys.argv[1]
 extractor = GitFeatureExtractor(repo_path)
 
-lifetimes = extractor.extract_bug_lifetimes("v4.0...v5.16")  
+lifetimes = extractor.extract_bug_lifetimes("v2.6.12...v6.14")  
 
 df = pd.DataFrame(lifetimes, columns=["bug_lifetime_days"])
+#df.to_csv("Buglifetime")
 
 
 # Plot
 sns.set(style="whitegrid")
 plt.figure(figsize=(12, 6))
-sns.histplot(df["bug_lifetime_days"], bins=30, kde=False)
+sns.histplot(df["bug_lifetime_days"], bins=250, kde=False)
+plt.yscale("log")
 plt.xlabel("Bug Lifetime (days)")
 plt.ylabel("Bugs Count")
 plt.title("Distribution of Bug Lifetime(via Fixes-Tags)")

@@ -2,6 +2,7 @@ import subprocess
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import numpy as np
 
 # list of kernel tags 
 kernel_tags = [
@@ -24,32 +25,41 @@ for i in range(len(kernel_tags) - 1):
     tag1 = kernel_tags[i]
     tag2 = kernel_tags[i + 1]
 
-    cmd = ["git", "-C", repo_path, "rev-list", "--count", f"{tag1}..{tag2}"]
+    cmd = ["git", "-C", repo_path, "rev-list", "--count", "--no-merges", f"{tag1}..{tag2}"]
     count = int(subprocess.check_output(cmd).decode().strip())
 
     data.append({"version": f"{tag2}", "patches": count})
 
 df = pd.DataFrame(data)
 
+x_numeric = np.arange(len(df)).astype(float)
+y_numeric = df["patches"].astype(float).values
+
+coeffs = np.polyfit(x_numeric, y_numeric, deg=1)
+regression_line = np.polyval(coeffs, x_numeric)
+
+
 sns.set(style="whitegrid")
 plt.figure(figsize=(12, 6))
-plt.fill_between(df["version"], df["patches"], color="skyblue", alpha=0.6)
-plt.plot(df["version"], df["patches"], color="steelblue", linewidth=2)
+plt.fill_between(x_numeric, y_numeric, color="skyblue", alpha=0.6)
+plt.plot(x_numeric, y_numeric, color="steelblue", linewidth=2, label="Patch Count")
+plt.plot(x_numeric, regression_line, color="darkred", linestyle="--", linewidth=2, label="Linear Trend")
 
-plt.title("Linux Kernel Patch Volume per Release (v4.0 – v6.7)")
+plt.title("Linux Kernel Patch Volume per Release (v4.0 - v6.7)")
 plt.xlabel("")
 plt.ylabel("Patch Count")
-plt.xticks([], []) 
+plt.xticks([], [])
 
 
 plt.text(
     x=len(df) / 2,
-    y=-max(df["patches"]) * 0.08,
-    s="Kernel releases from v4.0 to v6.7 (~2015–2024)",
+    y=-max(y_numeric) * 0.08,
+    s="Kernel releases from v4.0 to v6.7 (~2015 - 2024)",
     ha="center",
     fontsize=10
 )
 
+plt.legend()
 plt.grid(axis="y", linestyle="--", alpha=0.5)
 plt.tight_layout()
 plt.show()
