@@ -62,6 +62,7 @@ Install required Python libraries:
 
 ```bash
 pip install -r requirements.txt
+```
 
 Dependencies include:
 
@@ -183,7 +184,7 @@ Prints:
 
     Full feature vector for a single commit
 
-Example Workflow
+## Example Workflow
 
 # Step 1: Extract data
 python export_features.py ./linux-stable features.csv
