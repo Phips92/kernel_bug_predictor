@@ -23,22 +23,22 @@ The goal is to help Developers identify buggy commits based on commit metadata..
 
 ```text
 scripts/
-├── scripts/export_features.py # Extracts features from Git repository
-├── scripts/export_ortho_data.py # Adds orthogonal tool indicators to features
-├── scripts/train_model.py # Trains a model to estimate he probability that a commit is a bugfix
-├── scripts/predict.py # Applies the trained model to new data
-├── scripts/evaluate_predictions.py # Analyzes probability distributions and top results
-├── scripts/evaluate_prediction_quality.py # Generates confusion matrix and classification report
-├── scripts/visualize_model_evaluation.py # ROC/AUC, model architecture, class-wise histogram
-├── scripts/shap_analysis.py # SHAP feature importance visualization
-├── scripts/merge_message_and_predictions.py # Merges commit messages with model predictions
-├── scripts/merge_predictions_and_labels.py # Joins predictions with true labels
-├── scripts/compare_predictions_with_labels.py # Focus on perfect-score predictions
-├── scripts/check_tool_ortho.py # Verifies correlation between model score and tool mention
-├── scripts/plot_bug_lifetime.py # Shows distribution of bug lifetimes (days)
-├── scripts/analyze_data.py # Exploratory data analysis and statistics
-├── scripts/Visualizations_for_thesis.py # Kernel release trends and patch volume
-├── scripts/test_extractor.py # Verifies feature extractor functionality
+├── export_features.py # Extracts features from Git repository
+├── export_ortho_data.py # Adds orthogonal tool indicators to features
+├── train_model.py # Trains a model to estimate he probability that a commit is a bugfix
+├── predict.py # Applies the trained model to new data
+├── evaluate_predictions.py # Analyzes probability distributions and top results
+├── evaluate_prediction_quality.py # Generates confusion matrix and classification report
+├── visualize_model_evaluation.py # ROC/AUC, model architecture, class-wise histogram
+├── shap_analysis.py # SHAP feature importance visualization
+├── merge_message_and_predictions.py # Merges commit messages with model predictions
+├── merge_predictions_and_labels.py # Joins predictions with true labels
+├── compare_predictions_with_labels.py # Focus on perfect-score predictions
+├── check_tool_ortho.py # Verifies correlation between model score and tool mention
+├── plot_bug_lifetime.py # Shows distribution of bug lifetimes (days)
+├── analyze_data.py # Exploratory data analysis and statistics
+├── Visualizations_for_thesis.py # Kernel release trends and patch volume
+├── test_extractor.py # Verifies feature extractor functionality
 scr/
 └── extract/git_feature_extractor.py # Core feature extraction class
 
