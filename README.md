@@ -72,9 +72,14 @@ Dependencies include:
 
     shap, unidiff, GitPython
 
+---
+
 ### Dataset Creation
 
-You need a local clone of the Linux kernel repository.
+You need a local clone of the official Linux kernel Git repository.
+You can clone it with the following command:
+
+    git clone https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
 
 ### Extract full feature vectors:
 
