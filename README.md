@@ -19,9 +19,10 @@ The goal is to help Developers identify buggy commits based on commit metadata..
 
 ---
 
-## Project Structure
+## Scripts Overiew
 
-.
+```text
+scripts/
 ├── scripts/export_features.py # Extracts features from Git repository
 ├── scripts/export_ortho_data.py # Adds orthogonal tool indicators to features
 ├── scripts/train_model.py # Trains a model to estimate he probability that a commit is a bugfix
@@ -38,8 +39,8 @@ The goal is to help Developers identify buggy commits based on commit metadata..
 ├── scripts/analyze_data.py # Exploratory data analysis and statistics
 ├── scripts/Visualizations_for_thesis.py # Kernel release trends and patch volume
 ├── scripts/test_extractor.py # Verifies feature extractor functionality
-└── src/extract/git_feature_extractor.py # Core feature extraction class
-
+scr/
+└── extract/git_feature_extractor.py # Core feature extraction class
 
 ---
 
@@ -196,7 +197,8 @@ python predict.py features.csv predictions.csv
 python evaluate_prediction_quality.py features.csv predictions.csv
 python visualize_model_evaluation.py features.csv
 
-Academic Use
+
+## Academic Use
 
 This project was developed as part of a Bachelor thesis in Data Science, focused on applying interpretable machine learning to real-world software engineering data.
 
@@ -206,11 +208,9 @@ This project was developed as part of a Bachelor thesis in Data Science, focused
 
 This project is licensed under the GNU General Public License v3.0
 
-Contact
+## Author
 
-For questions or collaborations, feel free to reach out via GitHub or email.
+Philipp (Phips92)
 
----
-
-Let me know if you'd like to localize this, add citation references for academic usage, or conver
+For questions or collaborations, feel free to contact me at [philipp92.mcguire@gmail.com].
 
