@@ -72,23 +72,23 @@ Dependencies include:
 
     shap, unidiff, GitPython
 
-Dataset Creation
+### Dataset Creation
 
 You need a local clone of the Linux kernel repository.
 
-Extract full feature vectors:
+### Extract full feature vectors:
 
-python export_features.py <path_to_linux_repo> features.csv
+    python export_features.py <path_to_linux_repo> features.csv
 
 Or include tool-indication for bug fixes:
 
-python export_ortho_data.py <path_to_linux_repo> features_with_tools.csv
+    python export_ortho_data.py <path_to_linux_repo> features_with_tools.csv
 
-Model Training
+### Model Training
 
 Train a neural network classifier:
 
-python train_model.py features.csv
+    python train_model.py features.csv
 
 Output:
 
@@ -96,19 +96,19 @@ Output:
 
     Feature scaler -> models/scaler.pkl
 
-Inference
+### Prediction
 
 Apply the trained model:
 
-python predict.py features.csv predictions.csv
+    python predict.py features.csv predictions.csv
 
 Each commit receives a probability bug_probability [0, 1].
 
-Evaluation & Analysis
+### Evaluation & Analysis
 
 Classification Report
 
-python evaluate_prediction_quality.py features.csv predictions.csv
+    python evaluate_prediction_quality.py features.csv predictions.csv
 
 Includes:
 
@@ -118,9 +118,9 @@ Includes:
 
     False negatives
 
-Threshold Inspection
+### Threshold Inspection
 
-python evaluate_predictions.py predictions.csv
+    python evaluate_predictions.py predictions.csv
 
 Outputs:
 
@@ -130,11 +130,11 @@ Outputs:
 
     Histogram of predicted probabilities
 
-Visual Tools
+### Visual Tools
 
 ROC & Architecture
 
-python visualize_model_evaluation.py features.csv
+    python visualize_model_evaluation.py features.csv
 
 Saves:
 
@@ -144,21 +144,21 @@ Saves:
 
     prediction_histogram_by_class.png
 
-SHAP Explanation
+### SHAP Explanation
 
-python shap_analysis.py features.csv models/bugfix_model.keras models/scaler.pkl
+    python shap_analysis.py features.csv models/bugfix_model.keras models/scaler.pkl
 
 Outputs:
 
     shap_summary_plot.png (Feature importance)
 
-Bug Lifetime Analysis
+### Bug Lifetime Analysis
 
-python plot_bug_lifetime.py <path_to_linux_repo>
+    python plot_bug_lifetime.py <path_to_linux_repo>
 
 Visualizes days between buggy commit and its fix.
 
-Other Utilities
+### Other Utilities
 
     merge_message_and_predictions.py: Adds commit message for inspection
 
@@ -170,9 +170,9 @@ Other Utilities
 
     Visualizations_for_thesis.py: Patch volume across kernel versions
 
-Test the Extractor
+### Test the Extractor
 
-python test_extractor.py <path_to_linux_repo>
+    python test_extractor.py <path_to_linux_repo>
 
 Prints:
 
@@ -184,21 +184,24 @@ Prints:
 
     Full feature vector for a single commit
 
+---
+
 ## Example Workflow
 
-# Step 1: Extract data
+### Step 1: Extract data
 python export_features.py ./linux-stable features.csv
 
-# Step 2: Train model
+### Step 2: Train model
 python train_model.py features.csv
 
-# Step 3: Predict
+### Step 3: Predict
 python predict.py features.csv predictions.csv
 
-# Step 4: Evaluate
+### Step 4: Evaluate
 python evaluate_prediction_quality.py features.csv predictions.csv
 python visualize_model_evaluation.py features.csv
 
+---
 
 ## Academic Use
 
