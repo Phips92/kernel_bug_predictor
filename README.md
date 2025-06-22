@@ -19,13 +19,13 @@ The goal is to help Developers identify buggy commits based on commit metadata..
 
 ---
 
-## Scripts Overiew
+## Scripts Overview
 
 ```text
 scripts/
 ├── export_features.py # Extracts features from Git repository
 ├── export_ortho_data.py # Adds orthogonal tool indicators to features
-├── train_model.py # Trains a model to estimate he probability that a commit is a bugfix
+├── train_model.py # Trains a model to estimate the probability that a commit is a bugfix
 ├── predict.py # Applies the trained model to new data
 ├── evaluate_predictions.py # Analyzes probability distributions and top results
 ├── evaluate_prediction_quality.py # Generates confusion matrix and classification report
@@ -39,7 +39,7 @@ scripts/
 ├── analyze_data.py # Exploratory data analysis and statistics
 ├── Visualizations_for_thesis.py # Kernel release trends and patch volume
 ├── test_extractor.py # Verifies feature extractor functionality
-scr/
+src/
 └── extract/git_feature_extractor.py # Core feature extraction class
 ```
 
@@ -64,13 +64,11 @@ Install required Python libraries:
 pip install -r requirements.txt
 ```
 
-Dependencies include:
-
-    tensorflow, scikit-learn, joblib
-
-    pandas, numpy, matplotlib, seaborn
-
-    shap, unidiff, GitPython
+**Key Dependencies**:
+- ML: `tensorflow`, `scikit-learn`, `joblib`
+- Data Processing: `pandas`, `numpy`
+- Visualization: `matplotlib`, `seaborn`, `shap`
+- Git Interaction: `GitPython`, `unidiff`
 
 ---
 
