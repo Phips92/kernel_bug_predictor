@@ -1,6 +1,6 @@
 # Kernel Bug Predictor
 
-This project provides a full pipeline to **predict bugfix commits in the Linux kernel** using machine learning. It includes tooling for **feature extraction from Git history**, **model training and evaluation**, as well as **visual analysis** and **interpretability**.
+This project provides a full pipeline to **predict bugs in the Linux kernel** using machine learning. It includes tooling for **feature extraction from Git history**, **model training and evaluation**, as well as **visual analysis** and **interpretability**.
 
 The goal is to help Developers identify buggy commits based on commit metadata..
 
@@ -77,7 +77,7 @@ pip install -r requirements.txt
 You need a local clone of the official Linux kernel Git repository.
 You can clone it with the following command:
 
-    git clone https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
+    git clone https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git linux-stable
 
 ### Extract full feature vectors:
 
@@ -86,6 +86,8 @@ You can clone it with the following command:
 Or include tool-indication for bug fixes:
 
     python export_ortho_data.py <path_to_linux_repo> features_with_tools.csv
+
+- Note: The current feature extractor (`git_feature_extractor.py`) is configured to process commits between **v5.17 and v6.0**. These versions are hardcoded and can be adjusted in the script if needed.
 
 ### Model Training
 
@@ -214,11 +216,11 @@ This project was developed as part of a Bachelor thesis in Data Science, focused
 
 ## License
 
-This project is licensed under the GNU General Public License v3.0
+This project is licensed under the GNU General Public License v3.0 for code and CC-BY-SA-4.0 for documentation.
 
 ## Author
 
-Philipp (Phips92)
+Philipp Mc Guire (Phips92)
 
 For questions or collaborations, feel free to contact me at [philipp92.mcguire@gmail.com].
 
